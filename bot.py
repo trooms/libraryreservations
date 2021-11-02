@@ -1,21 +1,19 @@
-import time
-import requests
-import bs4
-from selenium import webdriver
-import time
-import sys
 import os
+import time
+import pandas
+from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
-import pandas
 
 class RSFBot:
     def __init__(self, args):
         self.initURL = 'https://libcal.usc.edu/space/18367'
         self.usernames = args['usernames']
         self.passwords = args['passwords']
+        self.options = webdriver.ChromeOptions()
+        self.options.add_argument('headless')
         self.service = Service(f'{os.getcwd()}/chromedriver')
-        self.driver = webdriver.Chrome(service=self.service)
+        self.driver = webdriver.Chrome(service=self.service, options=self.options)
         self.userIndex = 0
         self.driver.implicitly_wait(6)
 
@@ -90,7 +88,7 @@ class RSFBot:
 
     def reset(self):
         self.driver.quit()
-        self.driver = webdriver.Chrome(service=self.service)
+        self.driver = webdriver.Chrome(service=self.service, options=self.options)
         self.userIndex += 1
         if self.userIndex >= len(self.usernames):
             self.userIndex = 0
