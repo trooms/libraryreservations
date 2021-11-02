@@ -6,6 +6,7 @@ import time
 import sys
 import os
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
 import pandas
 
 class RSFBot:
@@ -13,7 +14,8 @@ class RSFBot:
         self.initURL = 'https://libcal.usc.edu/space/18367'
         self.usernames = args['usernames']
         self.passwords = args['passwords']
-        self.driver = webdriver.Chrome(f'{os.getcwd()}/chromedriver')
+        self.service = Service(f'{os.getcwd()}/chromedriver')
+        self.driver = webdriver.Chrome(service=self.service)
         self.userIndex = 0
         self.driver.implicitly_wait(6)
 
@@ -37,11 +39,14 @@ class RSFBot:
         time.sleep(1)
         i = 1
         while self.driver.current_url == self.initURL:
-            try: 
+            try:
                 slot = self.driver.find_element(By.XPATH, f'//*[@id="eq-time-grid"]/div[2]/div/table/tbody/tr/td[3]/div/div/div/table/tbody/tr/td/div/div[2]/div[{i}]')
             except:
                 break
-            slot.click()
+            try:
+                slot.click()
+            except:
+                pass
             time.sleep(0.1)
             i += 1
         time.sleep(1)
@@ -85,9 +90,9 @@ class RSFBot:
 
     def reset(self):
         self.driver.quit()
-        self.driver = webdriver.Chrome(f'{os.getcwd()}/chromedriver')
+        self.driver = webdriver.Chrome(service=self.service)
         self.userIndex += 1
-        if self.userIndex > len(self.usernames):
+        if self.userIndex >= len(self.usernames):
             self.userIndex = 0
         self.run()
 
@@ -95,7 +100,7 @@ class RSFBot:
         time.sleep(1)
         self.init_browser()
         if not self.select_closest_timeslot():
-            print("cant book")
+            print("SUCCESSFULLY BOOKED ALL SLOTS")
             self.driver.quit()
             return
         self.auth_uscid()
@@ -110,4 +115,7 @@ if __name__ == '__main__':
 
     logins = {'usernames': usernames, 'passwords': passwords}
     bot = RSFBot(logins)
-    bot.run()
+    try:
+        bot.run()
+    except:
+        bot.run()
