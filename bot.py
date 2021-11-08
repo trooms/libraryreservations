@@ -59,7 +59,11 @@ class RSFBot:
         while self.driver.current_url == self.initURL:
             time.sleep(0.5)
         time.sleep(1)
-        username_field = self.driver.find_element(By.ID, 'username')
+        try:
+            username_field = self.driver.find_element(By.ID, 'username')
+        except:
+            time.sleep(3)
+            username_field = self.driver.find_element(By.ID, 'username')
         try:
             username_field.send_keys(self.usernames[self.userIndex])
         except:
@@ -116,4 +120,6 @@ if __name__ == '__main__':
     try:
         bot.run()
     except:
-        bot.run()
+        time.sleep(1)
+        bot.reset()
+
